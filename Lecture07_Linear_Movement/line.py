@@ -1,4 +1,5 @@
 from pico2d import *
+import random
 
 KPU_WIDTH, KPU_HEIGHT = 1280, 1024
 
@@ -28,13 +29,13 @@ x = 800 // 2
 y = 800 // 2
 frame = 0
 dir = 0
-px, py = 300, 300
+randx, randy = random.randrange(10, KPU_WIDTH), random.randrange(10, KPU_HEIGHT)
 
 while running:
     clear_canvas()
     kpu_ground.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
     mouse.clip_draw(frame * 100, 0, 100, 100, x, y)
-    character.clip_draw(frame * 100, 0, 100, 100, px, py)
+    character.clip_draw(frame * 100, 0, 100, 100, randx, randy)
     update_canvas()
     handle_events()
     frame = (frame + 1) & 8
