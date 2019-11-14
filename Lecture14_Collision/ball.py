@@ -2,14 +2,18 @@ import random
 from pico2d import *
 import game_world
 import game_framework
+from brick import Brick
+brick = None
 
 class Ball:
     image = None
 
-    def __init__(self):
+    def __init__(self, x = random.randint(0, 1600-1), y = 60, fall_speed = 0):
         if Ball.image == None:
             Ball.image = load_image('ball21x21.png')
-        self.x, self.y, self.fall_speed = random.randint(0, 1600-1), 60, 0
+        self.x, self.y, self.fall_speed = x, y, fall_speed
+        self.dir = 1
+
 
     def get_bb(self):
         # fill here
@@ -22,24 +26,38 @@ class Ball:
 
     def update(self):
         self.y -= self.fall_speed * game_framework.frame_time
+        pass
 
     #fill here for def stop
     def stop(self):
         self.fall_speed = 0
 
+    def after_collide(self):
+        brick = Brick()
+        self.speed = brick.speed
+        self.dir = brick.dir
+        self.y = brick.y + 40
+
+        self.x += self.dir * game_framework.frame_time * self.speed
+        #self.x = clamp(100, self.x, 1600 - 100)
+        pass
+
+
+
+
 # fill here
 # class BigBall
 class BigBall(Ball):
-    MIN_FALL_SPEED = 50  # 50 pps = 1.5 meter per sec
-    MAX_FALL_SPEED = 200  # 200 pps = 6 meter per sec
-
+    MIN_FALL_SPEED = 50
+    MAX_FALL_SPEED = 200
     image = None
 
     def __init__(self):
         if BigBall.image == None:
             BigBall.image = load_image('ball41x41.png')
         self.x, self.y = random.randint(0, 1600 - 1), 500
-        self.fall_speed = random.randint(BigBall.MIN_FALL_SPEED, BigBall.MAX_FALL_SPEED)
+        self.fall_speed = random.randint(BigBall.MIN_FALL_SPEED,
+                                         BigBall.MAX_FALL_SPEED)
 
     def get_bb(self):
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20
