@@ -16,6 +16,7 @@ boy = None
 grass = None
 balls = []
 big_balls = []
+brick = None
 
 
 def collide(a, b):
@@ -27,9 +28,6 @@ def collide(a, b):
     if top_a < bottom_b: return False
     if bottom_a > top_b: return False
     return True
-
-
-
 
 def enter():
     global boy
@@ -44,6 +42,10 @@ def enter():
     global balls
     balls = [Ball() for i in range(10)] + [BigBall() for i in range(10)]
     game_world.add_objects(balls, 1)
+
+    global brick
+    brick = Brick()
+    game_world.add_object(brick, 1)
 
 def exit():
     game_world.clear()
@@ -73,15 +75,15 @@ def update():
 
     # fill here for collision check
     for ball in balls:
-        if collide(boy, ball):
-            balls.remove(ball)
-            game_world.remove_object(ball)
-
-    for ball in balls:
-        if collide(grass, ball):
+        if collide(brick, ball):
             ball.stop()
+            ball.x += brick.velocity
 
-    delay(0.9)
+    if collide(boy, grass):
+        boy.collide_ground()
+    elif collide(boy, brick):
+        boy.collide_ground()
+        boy.x += brick.velocity
 
 def draw():
     clear_canvas()
