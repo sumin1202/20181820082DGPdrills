@@ -146,6 +146,8 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.gravity = -0.01
+        self.vertical_acceleration = 0
 
     def get_bb(self):
         # fill here
@@ -179,3 +181,19 @@ class Boy:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
 
+    def jump(self):
+        self.vertical_acceleration = 2
+
+    def collide_ground(self):
+        self.vertical_acceleration = 0
+
+    def update(self):
+        self.cur_state.do(self)
+        if len(self.event_que) > 0:
+            event = self.event_que.pop()
+            self.cur_state.exit(self, event)
+            self.cur_state = next_state_table[self.cur_state][event]
+            self.cur_state.enter(self, event)
+
+        self.y += self.vertical_acceleration
+        self.vertical_acceleration += self.gravity
