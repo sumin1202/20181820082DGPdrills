@@ -71,12 +71,15 @@ class WalkingState:
         boy.y += boy.y_velocity * game_framework.frame_time
 
         # fill here
-
-
+        # boy.x = clamp(boy.canvas_width // 2, boy.x, boy.bg.w - boy.canvas_width // 2)
+        # boy.y = clamp(boy.canvas_height // 2, boy.y, boy.bg.h - boy.canvas_height // 2)
+        boy.x = clamp(0, boy.x, boy.bg.w)
+        boy.y = clamp(0, boy.y, boy.bg.h)
 
     @staticmethod
     def draw(boy):
         # fill here
+        cx, cy = boy.x - boy.bg.window_left, boy.y - boy.bg.window_bottom
         if boy.x_velocity > 0:
             boy.image.clip_draw(int(boy.frame) * 100, 100, 100, 100, cx, cy)
             boy.dir = 1
@@ -116,12 +119,13 @@ class Boy:
         self.dir = 1
         self.x_velocity, self.y_velocity = 0, 0
         self.frame = 0
+        self.cnt = 0
         self.event_que = []
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
 
     def get_bb(self):
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - self.bg.window_left - 50, self.y - self.bg.window_bottom - 50, self.x - self.bg.window_left + 50, self.y - self.bg.window_bottom + 50
 
 
     def set_background(self, bg):
@@ -140,12 +144,15 @@ class Boy:
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
 
+    def eat(self):
+        self.cnt += 1
+
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.canvas_width//2 - 60, self.canvas_height//2 + 50, '(%5d, %5d)' % (self.x, self.y), (255, 255, 0))
+        self.font.draw(self.x - self.bg.window_left - 60, self.y - self.bg.window_bottom + 50, '(%d)' % (self.cnt), (255, 255, 0))
+        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
-
