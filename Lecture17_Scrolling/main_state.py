@@ -1,18 +1,18 @@
-import random
-import json
-import os
-
 from pico2d import *
+
 import game_framework
 import game_world
-
 from boy import Boy
+from ball import Ball
+
 # fill here
+from background import FixedBackground as Background
 
 name = "MainState"
 
 boy = None
 background = None
+balls = []
 
 
 def collide(a, b):
@@ -42,7 +42,14 @@ def enter():
     background = Background()
     game_world.add_object(background, 0)
 
+    global balls
+    balls = [Ball() for i in range(100)]
+    game_world.add_objects(balls, 0)
+
     # fill here
+    background.set_center_object(boy)
+    boy.set_background(background)
+
 
 
 def exit():
@@ -51,6 +58,8 @@ def exit():
 def pause():
     pass
 
+def get_boy():
+    return boy
 
 def resume():
     pass
@@ -70,6 +79,11 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    for ball in balls:
+        if collide(ball, boy):
+            game_world.remove_object(ball)
+            balls.remove(ball)
+            boy.cnt += 1
 
 
 def draw():
@@ -77,9 +91,3 @@ def draw():
     for game_object in game_world.all_objects():
         game_object.draw()
     update_canvas()
-
-
-
-
-
-
